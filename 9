@@ -1,0 +1,26 @@
+name: Build TR.SUB APK
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: unzip -q TRSUB.zip
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.7
+      - run: gradle assembleDebug --no-daemon
+        working-directory: TRSUB
+      - run: mv app/build/outputs/apk/debug/app-debug.apk ../TR.SUB.apk
+        working-directory: TRSUB
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TR.SUB-APK
+          path: TR.SUB.apk
